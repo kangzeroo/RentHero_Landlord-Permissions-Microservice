@@ -18,7 +18,12 @@ const log_through = data => {
 }
 
 exports.grantAllPermissions = (info) => {
-  const query_string = `SELECT * FROM table`
+
+  const query_string = `INSERT INTO general_access (staff_id, corporation_id, building_id)
+                            SELECT '${info.staff_id}', a.corporation_id, a.building_id
+                            FROM (SELECT DISTINCT corporation_id, building_id FROM general_access) a
+                            WHERE corporation_id = '${info.corporation_id}'`
+
   query(query_string)
  .then((data) => {
     // console.log('Building info inserted in postgres')
