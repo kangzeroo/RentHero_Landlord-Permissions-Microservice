@@ -59,7 +59,15 @@ exports.post_staff_info = (req, res, next) => {
                               '${info.email}', '${info.name}', '${info.phone}', '${info.staff_title}')`
   // console.log(query_string)
 
-  query(query_string).then((data) => {
+  query(query_string)
+  .then((data) => {
+    let query_string = `INSERT INTO general_access (staff_id, corporation_id, building_id)
+                              SELECT '${info.staff_id}', a.corporation_id, a.building_id
+                              FROM (SELECT DISTINCT corporation_id, building_id FROM general_access) a
+                              WHERE corporation_id = '${info.corporation_id}'`
+    return query(query_string)
+  })
+  .then((data) => {
     // console.log('register info inserted in postgres')
     return sendStaffConfirmationEmail({
       email: info.email,
