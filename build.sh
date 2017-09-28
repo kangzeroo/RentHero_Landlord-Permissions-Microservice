@@ -1,1 +1,1 @@
-docker build -t nodeultimate .
+docker build -t landlord_permissions_microservice .

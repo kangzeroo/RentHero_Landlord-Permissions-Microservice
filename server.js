@@ -20,23 +20,31 @@ app.use(cors());
 // we instantiate the router function that defines all our HTTP route endpoints
 router(app);
 
-// instantiate the SSL certificate necessary for HTTPS
-const options = {
-    key: fs.readFileSync('./credentials/server.key'),
-    cert: fs.readFileSync('./credentials/server.crt'),
-    requestCert: false,
-    rejectUnauthorized: false
-}
-
-// Server setup
-// if there is an environment variable of PORT already defined, use it. otherwise use port 3091
-const port = process.env.PORT || 3000
-
 // create a server with the native node https library
-const server = https.createServer(options, app)
-
-// listen to the server on port
-server.listen(port, function(){
-  console.log("Getting ready to go...")
-  console.log("Server listening on: ", port)
-})
+if (process.env.NODE_ENV === 'production') {
+  const options = {
+      ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
+      key: fs.readFileSync('./credentials/rentburrow_com.key'),
+      cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
+      requestCert: false,
+      rejectUnauthorized: false
+  }
+  const server = https.createServer(options, app)
+  // listen to the server on port
+  server.listen(port, function(){
+    console.log("Server listening on https: ", port)
+  })
+} else {
+  // instantiate the SSL certificate necessary for HTTPS
+  const options = {
+      key: fs.readFileSync('./credentials/rentburrow_com.key'),
+      cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
+      requestCert: false,
+      rejectUnauthorized: false
+  }
+  const server = https.createServer(options, app)
+  // listen to the server on port
+  server.listen(port, function(){
+    console.log("Server listening on https: ", port)
+  })
+}
