@@ -3,11 +3,12 @@ const createStaffTableEntry = require('../Postgres/Queries/StaffQuery').createSt
 const grantAllPermissions = require('../Postgres/Queries/PermissionQuery').grantAllPermissions
 
 // GET /send_staff_invite
+// We use this function to manually create a staff member
 exports.send_staff_invite = function(req, res, next){
-  createStaffTableEntry()
+  createStaffTableEntry(req.body)
     .then((data) => {
       console.log(data)
-      return grantAllPermissions()
+      return grantAllPermissions(data)
     }).then((data) => {
       console.log(data)
       res.json({})

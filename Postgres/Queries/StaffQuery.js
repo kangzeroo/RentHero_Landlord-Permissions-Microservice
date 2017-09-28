@@ -1,7 +1,7 @@
 const Promise = require('bluebird')
 const { promisify } = Promise
 const pool = require('../db_connect')
-
+const sendStaffConfirmationEmail = require('../../aws/ses/aws_ses').sendStaffConfirmationEmail
 // to run a query we just pass it to the pool
 // after we're done nothing has to be taken care of
 // we don't have to return any client to the pool or close a connection
@@ -27,25 +27,31 @@ exports.createStaffTableEntry = (info) => {
                         VALUES ('${info.staff_id}'${info.corporation_id ? `, '${info.corporation_id}'` : ''},
                                 '${info.email}', '${info.name}', '${info.phone}', '${info.staff_title}')`
     // console.log(query_string)
-
-    query(query_string).then((data) => {
-      // console.log('register info inserted in postgres')
-      res({
-        message: 'Successfully created account! Check your email for the confirmation link',
-        data: data
+    query(query_string)
+      .then((data) => {
+        return sendStaffConfirmationEmail({
+          email: info.email,
+          temp_pass: info.temp_pass || '',
+        })
       })
-    })
-    .catch((error) => {
-      console.log(error)
-      rej('Failed to save account info')
-    })
+      .then((data) => {
+        // console.log('register info inserted in postgres')
+        res({
+          staff_id: info.staff_id,
+          corporation_id: info.corporation_id,
+        })
+      })
+      .catch((error) => {
+        console.log(error)
+        rej('Failed to save account info')
+      })
   })
   return p
 }
 
 exports.post_staff_info = (req, res, next) => {
   const info = req.body
-  // console.log(info)
+  // info = { staff_id, email, name, corporation_id, staff_title, temp_pass, accessToken }
   // we can optionally accept a pre-defined corporation for this staff member to be associated with
   let query_string = `INSERT INTO staff (staff_id${info.corporation_id ? ', corporation_id' : ''}, email, name, phone,
                                         staff_title)
@@ -55,9 +61,15 @@ exports.post_staff_info = (req, res, next) => {
 
   query(query_string).then((data) => {
     // console.log('register info inserted in postgres')
+    return sendStaffConfirmationEmail({
+      email: info.email,
+      temp_pass: info.temp_pass || '',
+    })
+  })
+  .then((data) => {
+    console.log('Email confirmation sent!')
     res.json({
       message: 'Successfully created account! Check your email for the confirmation link',
-      data: data
     })
   })
   .catch((error) => {
