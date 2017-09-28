@@ -29,4 +29,6 @@ module.exports = function(app){
 	app.post('/update_corp_thumbnail', [json_encoding, JWT_Check], CorpQuery.update_corp_thumbnail)
 	app.post('/get_corp_info', [json_encoding], CorpQuery.get_corp_info)
 
+	// Permission Queries
+	app.post('/insert_building_read_for_all', [json_encoding, JWT_Check], PermissionQuery.insert_building_read_for_all)
 }
