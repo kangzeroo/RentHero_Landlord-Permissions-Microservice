@@ -32,3 +32,32 @@ exports.grantAllPermissions = (info) => {
     res.status(500).send('Failed to do something')
   })
 }
+
+// insert read building access for all staff of corporation
+exports.insert_building_read_for_all = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+
+  let get_staff_of_corp = `SELECT staff_id FROM staff WHERE corporation_id = $1`
+
+  query(get_staff_of_corp, values)
+  .then((data) => {
+    const values2 = [info.corporation_id, info.building_id]
+    const arrayOfPromises = data.rows.map((row) => {
+      let insert_access = `INSERT INTO general_access (staff_id, corporation_id, building_id)
+                                  VALUES ('${row.staff_id}', $1, $2)`
+      return query(insert_access, values2)
+    })
+
+    return Promise.all(arrayOfPromises)
+  })
+  .then((data) => {
+    // console.log('General Access For Building inserted')
+    res.json({
+      message: 'Successfully saved access'
+    })
+  })
+  .catch((error) => {
+      res.status(500).send('Failed to save access')
+  })
+}
