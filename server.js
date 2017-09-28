@@ -20,6 +20,10 @@ app.use(cors());
 // we instantiate the router function that defines all our HTTP route endpoints
 router(app);
 
+// Server setup
+// if there is an environment variable of PORT already defined, use it. otherwise use port 3091
+const port = process.env.PORT || 3003
+
 // create a server with the native node https library
 if (process.env.NODE_ENV === 'production') {
   const options = {

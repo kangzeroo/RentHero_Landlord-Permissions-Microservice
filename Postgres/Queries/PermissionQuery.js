@@ -17,25 +17,7 @@ const log_through = data => {
   return data
 }
 
-exports.send_admin_invite = (req, res, next) => {
-  const info = req.body
-  const query_string = `SELECT * FROM table`
-  query(query_string)
- .then((data) => {
-    // console.log('Building info inserted in postgres')
-    res.json({
-      message: 'Successfully did something',
-
-    })
-  })
-  .catch((error) => {
-    console.log(error)
-    res.status(500).send('Failed to do something')
-  })
-}
-
-exports.send_admin_invite = (req, res, next) => {
-  const info = req.body
+exports.grantAllPermissions = (info) => {
   const query_string = `SELECT * FROM table`
   query(query_string)
  .then((data) => {
