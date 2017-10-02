@@ -53,19 +53,33 @@ exports.post_staff_info = (req, res, next) => {
   const info = req.body
   // info = { staff_id, email, name, corporation_id, staff_title, temp_pass, accessToken }
   // we can optionally accept a pre-defined corporation for this staff member to be associated with
-  let query_string = `INSERT INTO staff (staff_id${info.corporation_id ? ', corporation_id' : ''}, email, name, phone,
-                                        staff_title)
-                      VALUES ('${info.staff_id}'${info.corporation_id ? `, '${info.corporation_id}'` : ''},
-                              '${info.email}', '${info.name}', '${info.phone}', '${info.staff_title}')`
+  let query_string
+  let values
+
+  if (info.corporation_id) {
+    values = [info.staff_id, info.corporation_id, info.email, info.name, info.phone, info.staff_title]
+    query_string = `INSERT INTO staff (staff_id, corporation_id, email, name, phone, staff_title)
+                          VALUES ($1, $2, $3, $4, $5, $6)`
+  } else {
+    values = [info.staff_id, info.email, info.name, info.phone, info.staff_title]
+    query_string = `INSERT INTO staff (staff_id, email, name, phone, staff_title)
+                          VALUES ($1, $2, $3, $4, $5)`
+  }
+
+  // let query_string = `INSERT INTO staff (staff_id${info.corporation_id ? ', corporation_id' : ''}, email, name, phone,
+  //                                       staff_title)
+  //                     VALUES ('${info.staff_id}'${info.corporation_id ? `, '${info.corporation_id}'` : ''},
+  //                             '${info.email}', '${info.name}', '${info.phone}', '${info.staff_title}')`
   // console.log(query_string)
 
   query(query_string)
   .then((data) => {
-    let query_string = `INSERT INTO general_access (staff_id, corporation_id, building_id)
-                              SELECT '${info.staff_id}', a.corporation_id, a.building_id
+    const values2 = [info.staff_id, info.corporation_id]
+    const query_string = `INSERT INTO general_access (staff_id, corporation_id, building_id)
+                              SELECT $1, a.corporation_id, a.building_id
                               FROM (SELECT DISTINCT corporation_id, building_id FROM general_access) a
-                              WHERE corporation_id = '${info.corporation_id}'`
-    return query(query_string)
+                              WHERE corporation_id = $2`
+    return query(query_string, values2)
   })
   .then((data) => {
     // console.log('register info inserted in postgres')
@@ -88,12 +102,14 @@ exports.post_staff_info = (req, res, next) => {
 
 exports.get_staff_info = (req, res, next) => {
   const info = req.body
-  let query_string = `SELECT * FROM staff WHERE staff_id = '${info.staff_id}'`
+  const values = [info.staff_id]
+
+  let query_string = `SELECT * FROM staff WHERE staff_id = $1`
   const return_rows = (rows) => {
     res.json(rows)
   }
 
-  query(query_string)
+  query(query_string, values)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -115,9 +131,12 @@ exports.update_staff_thumbnail_photo = (req, res, next) => {
   const info = req.body
   // console.log(info)
   // we can optionally accept a pre-defined corporation for this staff member to be associated with
-  let query_string = `UPDATE staff SET thumbnail = '${info.thumbnail}' WHERE staff_id = '${info.staff_id}'`
+  const values = [info.thumbnail, info.staff_id]
 
-  query(query_string).then((data) => {
+  let query_string = `UPDATE staff SET thumbnail = $1 WHERE staff_id = $2`
+
+  query(query_string, values)
+  .then((data) => {
     res.json({
       message: 'Successfully updated account!'
     })
