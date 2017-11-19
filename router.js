@@ -28,6 +28,10 @@ module.exports = function(app){
 	app.post('/post_corp_info', [json_encoding, JWT_Check], CorpQuery.post_corp_info)
 	app.post('/update_corp_thumbnail', [json_encoding, JWT_Check], CorpQuery.update_corp_thumbnail)
 	app.post('/get_corp_info', [json_encoding], CorpQuery.get_corp_info)
+	app.post('/get_associated_corporations', [json_encoding], CorpQuery.get_associated_corporations)
+	app.post('/associate_corporation_list', [json_encoding], CorpQuery.associate_corporation_list)
+	app.post('/insert_building_corp_association', [json_encoding], CorpQuery.insert_building_corp_association)
+	app.post('/delete_corporation_building', [json_encoding], CorpQuery.delete_corporation_building)
 
 	// Permission Queries
 	app.post('/insert_building_read_for_all', [json_encoding, JWT_Check], PermissionQuery.insert_building_read_for_all)
