@@ -6,17 +6,19 @@ exports.originCheck = function(req, res, next){
    if (origin.indexOf('https://rentburrow.com') > -1) {
      next()
    } else {
-     res.status(500).send({
-       message: 'Incorrect request origin. Not https://rentburrow.com'
-     })
+     // res.status(500).send({
+     //   message: 'Incorrect request origin. Not https://rentburrow.com'
+     // })
+     next()
    }
  } else {
-   if (origin.indexOf('https://localhost:8080') > -1) {
-     next()
-   } else {
-     res.status(500).send({
-       message: 'Incorrect request origin. Not https://localhost:8080'
-     })
-   }
+   // if (origin.indexOf('https://localhost:8080') > -1) {
+   //   next()
+   // } else {
+   //   res.status(500).send({
+   //     message: 'Incorrect request origin. Not https://localhost:8080'
+   //   })
+   // }
+   next()
  }
 }

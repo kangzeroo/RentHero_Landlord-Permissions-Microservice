@@ -26,6 +26,8 @@ module.exports = function(app){
 	app.post('/update_staff_thumbnail_photo', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_thumbnail_photo)
 
 	// Corp Queries
+	app.post('/insert_corporation_profile', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_profile)
+	app.post('/insert_corporation_alias_email', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_alias_email)
 	app.post('/post_corp_info', [json_encoding, JWT_Check, originCheck], CorpQuery.post_corp_info)
 	app.post('/update_corp_thumbnail', [json_encoding, JWT_Check, originCheck], CorpQuery.update_corp_thumbnail)
 	app.post('/get_corp_info', [json_encoding, originCheck], CorpQuery.get_corp_info)
@@ -33,7 +35,7 @@ module.exports = function(app){
 	app.post('/associate_corporation_list', [json_encoding, originCheck], CorpQuery.associate_corporation_list)
 	app.post('/insert_building_corp_association', [json_encoding, originCheck], CorpQuery.insert_building_corp_association)
 	app.post('/delete_corporation_building', [json_encoding, originCheck], CorpQuery.delete_corporation_building)
-
+	app.post('/get_all_corporations', [json_encoding, originCheck], CorpQuery.get_all_corporations)
 	// Permission Queries
 	app.post('/insert_building_read_for_all', [json_encoding, JWT_Check, originCheck], PermissionQuery.insert_building_read_for_all)
 }
