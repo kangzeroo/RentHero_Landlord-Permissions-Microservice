@@ -20,6 +20,75 @@ const log_through = data => {
   return data
 }
 
+exports.get_all_corporations = (req, res, next) => {
+  const get_all_corps = `SELECT a.corporation_id, a.corporation_name, a.email, a.phone,
+                                a.website, a.thumbnail, a.created_at,
+                                b.corp_alias_emails
+                           FROM corporation a
+                           LEFT OUTER JOIN (
+                             SELECT corporation_id, JSON_AGG(( alias_email, purpose )) AS corp_alias_emails
+                               FROM corporation_alias_emails
+                              GROUP BY corporation_id
+                             ) b
+                           ON a.corporation_id = b.corporation_id
+                        `
+    const return_rows = (rows) => {
+      res.json(rows)
+    }
+    query(get_all_corps)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      console.log(error)
+        res.status(500).send('Failed to get corporations')
+    })
+}
+
+exports.insert_corporation_profile = (req, res, next) => {
+  const info = req.body
+  const corporation_id = uuid.v4()
+  const values = [corporation_id, info.corporation_name, info.email, info.phone, info.website, info.thumbnail]
+
+  let insert_corp = `INSERT INTO corporation (corporation_id, corporation_name, email, phone, website, thumbnail)
+                                      VALUES ($1, $2, $3, $4, $5, $6)`
+
+  query(insert_corp, values)
+  .then((data) => {
+    res.json({
+      message: 'inserted corporation',
+      corporation_id: corporation_id
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+    res.status(500).send('Failed to Save corporation')
+  })
+}
+
+exports.insert_corporation_alias_email = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id, info.alias_email, info.purpose]
+  const insert_corp = `INSERT INTO corporation_alias_emails (corporation_id, alias_email, purpose) VALUES ($1, $2, $3)`
+
+  query(insert_corp, values)
+  .then((data) => {
+    res.json({
+      message: 'inserted corporation alias emails'
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+    res.status(500).send('Failed to Save corporation alias emails')
+  })
+}
+
 exports.post_corp_info = (req, res, next) => {
   const info = req.body
   const corporation_id = uuid.v4()
