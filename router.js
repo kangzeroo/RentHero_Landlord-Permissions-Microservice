@@ -28,6 +28,8 @@ module.exports = function(app){
 	// Corp Queries
 	app.post('/insert_corporation_profile', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_profile)
 	app.post('/insert_corporation_alias_email', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_alias_email)
+	app.post('/insert_corporation_building_relationship', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_building_relationship)
+	app.post('/get_buildings_associated_with_corporation', [json_encoding, JWT_Check, originCheck], CorpQuery.get_buildings_associated_with_corporation)
 	app.post('/post_corp_info', [json_encoding, JWT_Check, originCheck], CorpQuery.post_corp_info)
 	app.post('/update_corp_thumbnail', [json_encoding, JWT_Check, originCheck], CorpQuery.update_corp_thumbnail)
 	app.post('/get_corp_info', [json_encoding, originCheck], CorpQuery.get_corp_info)
