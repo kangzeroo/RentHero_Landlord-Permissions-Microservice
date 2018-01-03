@@ -93,7 +93,14 @@ exports.insert_corporation_building_relationship = (req, res, next) => {
   const info = req.body
   const values = [info.building_id, info.corporation_id]
   const insert_building_relationship = `INSERT INTO corporation_building (building_id, corporation_id)
-                                             VALUES ($1, $2)`
+                                             SELECT $1, $2
+                                            WHERE NOT EXISTS (
+                                              SELECT building_id, corporation_id
+                                                FROM corporation_building
+                                               WHERE building_id = $1
+                                                 AND corporation_id = $2
+                                            )
+                                        `
 
   query(insert_building_relationship, values)
   .then((data) => {
@@ -352,5 +359,23 @@ exports.delete_corporation_building = (req, res, next) => {
   })
   .catch((err) => {
     res.status(500).send('Failed to delete building and corporation association')
+  })
+}
+
+exports.delete_corporation = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+
+  const delete_corp = `DELETE FROM corporation WHERE corporation_id = $1`
+
+  query(delete_corp, values)
+  .then((data) => {
+    res.json({
+      message: 'deleted corporation'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send('Failed to delete corporaiton')
   })
 }
