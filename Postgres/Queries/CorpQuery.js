@@ -89,6 +89,53 @@ exports.insert_corporation_alias_email = (req, res, next) => {
   })
 }
 
+exports.insert_corporation_building_relationship = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id, info.corporation_id]
+  const insert_building_relationship = `INSERT INTO corporation_building (building_id, corporation_id)
+                                             VALUES ($1, $2)`
+
+  query(insert_building_relationship, values)
+  .then((data) => {
+    res.json({
+      message: 'Success'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send('Failed to Save corporation building relationships')
+  })
+}
+
+exports.get_buildings_associated_with_corporation = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+  const get_buildings = `SELECT a.building_id, b.building_alias
+                           FROM corporation_building a
+                           INNER JOIN building b
+                           ON a.building_id = b.building_id
+                           WHERE a.corporation_id = $1`
+
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+
+  query(get_buildings, values)
+  .then((data) => {
+    return stringify_rows(data)
+  })
+  .then((data) => {
+    return json_rows(data)
+  })
+  .then((data) => {
+    return return_rows(data)
+  })
+  .catch((error) => {
+      res.status(500).send('Failed to get company info')
+  })
+}
+
 exports.post_corp_info = (req, res, next) => {
   const info = req.body
   const corporation_id = uuid.v4()
