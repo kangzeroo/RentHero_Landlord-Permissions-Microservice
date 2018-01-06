@@ -3,13 +3,12 @@
 exports.originCheck = function(req, res, next){
  const origin = req.get('origin')
  if (process.env.NODE_ENV === 'production') {
-   if (origin.indexOf('https://rentburrow.com') > -1) {
+   if (origin.indexOf('rentburrow.com') > -1 || origin.indexOf('renthero.com') > -1) {
      next()
    } else {
-     // res.status(500).send({
-     //   message: 'Incorrect request origin. Not https://rentburrow.com'
-     // })
-     next()
+     res.status(500).send({
+       message: 'bad boi bad boi'
+     })
    }
  } else {
    // if (origin.indexOf('https://localhost:8080') > -1) {
