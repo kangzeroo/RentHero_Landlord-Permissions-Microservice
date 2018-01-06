@@ -26,7 +26,7 @@ exports.get_all_corporations = (req, res, next) => {
                                 b.corp_alias_emails
                            FROM corporation a
                            LEFT OUTER JOIN (
-                             SELECT corporation_id, JSON_AGG(( alias_email, purpose )) AS corp_alias_emails
+                             SELECT corporation_id, JSON_AGG(( id, alias_email, purpose )) AS corp_alias_emails
                                FROM corporation_alias_emails
                               GROUP BY corporation_id
                              ) b
@@ -48,6 +48,33 @@ exports.get_all_corporations = (req, res, next) => {
     .catch((error) => {
       console.log(error)
         res.status(500).send('Failed to get corporations')
+    })
+}
+
+exports.get_corporation_alias_emails = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+
+  const get_corp_alias = `SELECT *
+                            FROM corporation_alias_emails
+                            WHERE corporation_id = $1
+                        `
+    const return_rows = (rows) => {
+      res.json(rows)
+    }
+    query(get_corp_alias, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      console.log(error)
+        res.status(500).send('Failed to get corporations aliases')
     })
 }
 
@@ -377,6 +404,47 @@ exports.delete_corporation = (req, res, next) => {
   })
   .catch((err) => {
     console.log(err)
-    res.status(500).send('Failed to delete corporaiton')
+    res.status(500).send('Failed to delete corporation')
+  })
+}
+
+exports.update_corporation = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id, info.corporation_name, info.website, info.email, info.phone]
+
+  const update_corp = `UPDATE corporation
+                          SET corporation_name = $2,
+                              website = $3,
+                              email = $4,
+                              phone = $5
+                        WHERE corporation_id = $1
+                      `
+
+  query(update_corp, values)
+  .then((data) => {
+    res.json({
+      message: 'updated corp'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send('Failed to update corporation')
+  })
+}
+
+exports.remove_alias_email = (req, res, next) => {
+  const info = req.body
+  const values = [info.id]
+
+  const remove_alias = `DELETE FROM corporation_alias_emails WHERE id = $1`
+
+  query(remove_alias, values)
+  .then((data) => {
+    res.json({
+      message: 'deleted corporation alias email'
+    })
+  })
+  .catch((err) => {
+    res.status(500).send('Failed to delete alias email')
   })
 }

@@ -38,7 +38,11 @@ module.exports = function(app){
 	app.post('/insert_building_corp_association', [json_encoding, originCheck], CorpQuery.insert_building_corp_association)
 	app.post('/delete_corporation_building', [json_encoding, originCheck], CorpQuery.delete_corporation_building)
 	app.post('/get_all_corporations', [json_encoding, originCheck], CorpQuery.get_all_corporations)
+	app.post('/get_corporation_alias_emails', [json_encoding, originCheck], CorpQuery.get_corporation_alias_emails)
 	app.post('/delete_corporation', [json_encoding, originCheck], CorpQuery.delete_corporation)
+	app.post('/update_corporation', [json_encoding, originCheck], CorpQuery.update_corporation)
+	app.post('/remove_alias_email', [json_encoding, originCheck], CorpQuery.remove_alias_email)
+
 
 	// Permission Queries
 	app.post('/insert_building_read_for_all', [json_encoding, JWT_Check, originCheck], PermissionQuery.insert_building_read_for_all)
