@@ -215,6 +215,7 @@ exports.post_corp_info_on_behalf_of_landlord = (info) => {
 exports.get_corp_info = (req, res, next) => {
   const info = req.body
   const values = [info.corporation_id]
+  console.log(values)
 
   let query_string = `SELECT * FROM corporation WHERE corporation_id = $1`
   const return_rows = (rows) => {
