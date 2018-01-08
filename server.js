@@ -26,10 +26,17 @@ const port = process.env.PORT || 3003
 
 // create a server with the native node https library
 if (process.env.NODE_ENV === 'production') {
+  // const options = {
+  //     ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
+  //     key: fs.readFileSync('./credentials/rentburrow_com.key'),
+  //     cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
+  //     requestCert: false,
+  //     rejectUnauthorized: false
+  // }
   const options = {
-      ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
-      key: fs.readFileSync('./credentials/rentburrow_com.key'),
-      cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
+      ca: fs.readFileSync('./credentials/renthero_host.ca-bundle'),
+      key: fs.readFileSync('./credentials/renthero_host.key'),
+      cert: fs.readFileSync('./credentials/renthero_host.crt'),
       requestCert: false,
       rejectUnauthorized: false
   }
@@ -40,13 +47,13 @@ if (process.env.NODE_ENV === 'production') {
   })
 } else {
   // instantiate the SSL certificate necessary for HTTPS
-  const options = {
-      ca: fs.readFileSync('./credentials/renthero_host.ca-bundle'),
-      key: fs.readFileSync('./credentials/renthero_host.key'),
-      cert: fs.readFileSync('./credentials/renthero_host.crt'),
-      requestCert: false,
-      rejectUnauthorized: false
-  }
+  // const options = {
+  //     ca: fs.readFileSync('./credentials/renthero_host.ca-bundle'),
+  //     key: fs.readFileSync('./credentials/renthero_host.key'),
+  //     cert: fs.readFileSync('./credentials/renthero_host.crt'),
+  //     requestCert: false,
+  //     rejectUnauthorized: false
+  // }
   const server = https.createServer(options, app)
   // listen to the server on port
   server.listen(port, function(){
