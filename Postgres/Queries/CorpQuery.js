@@ -22,7 +22,7 @@ const log_through = data => {
 
 exports.get_all_corporations = (req, res, next) => {
   const get_all_corps = `SELECT a.corporation_id, a.corporation_name, a.email, a.phone,
-                                a.website, a.thumbnail, a.created_at,
+                                a.website, a.thumbnail, a.created_at, a.corporate_landlord,
                                 b.corp_alias_emails
                            FROM corporation a
                            LEFT OUTER JOIN (
@@ -410,13 +410,14 @@ exports.delete_corporation = (req, res, next) => {
 
 exports.update_corporation = (req, res, next) => {
   const info = req.body
-  const values = [info.corporation_id, info.corporation_name, info.website, info.email, info.phone]
+  const values = [info.corporation_id, info.corporation_name, info.website, info.email, info.phone, info.corporate_landlord]
 
   const update_corp = `UPDATE corporation
                           SET corporation_name = $2,
                               website = $3,
                               email = $4,
-                              phone = $5
+                              phone = $5,
+                              corporate_landlord = $6
                         WHERE corporation_id = $1
                       `
 
