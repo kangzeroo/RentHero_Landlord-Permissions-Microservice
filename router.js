@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const Test = require('./routes/test_routes')
 const InviteRoutes = require('./routes/Invite_Routes')
 const StaffQuery = require('./Postgres/Queries/StaffQuery')
+const StaffPermissionsQuery = require('./Postgres/Queries/StaffPermissionsQuery')
 const CorpQuery = require('./Postgres/Queries/CorpQuery')
 const JWT_Check = require('./AuthCheck/JWT_Check').JWT_Check
 const originCheck = require('./AuthCheck/originCheck').originCheck
@@ -23,7 +24,13 @@ module.exports = function(app){
 	app.post('/get_staff_info', [json_encoding, originCheck], StaffQuery.get_staff_info)
 	app.post('/get_all_staff_in_corp', [json_encoding, originCheck], StaffQuery.get_all_staff_in_corp)
 	app.post('/update_staff_thumbnail_photo', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_thumbnail_photo)
+	app.post('/update_staff_profile', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_profile)
 	app.post('/delete_staff', [json_encoding, JWT_Check, originCheck], StaffQuery.delete_staff)
+
+	// Staff Permissions Queries
+	app.post('/insert_staff_permissions', [json_encoding, JWT_Check, originCheck], StaffPermissionsQuery.insert_staff_permissions)
+	app.post('/get_permissions_for_staff', [json_encoding, JWT_Check, originCheck], StaffPermissionsQuery.get_permissions_for_staff)
+	app.post('/delete_all_permissions_for_staff', [json_encoding, JWT_Check, originCheck], StaffPermissionsQuery.delete_all_permissions_for_staff)
 
 	// Corp Queries
 	app.post('/insert_corporation_profile', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_profile)
