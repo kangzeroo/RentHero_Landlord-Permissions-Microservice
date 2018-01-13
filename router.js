@@ -4,8 +4,6 @@ const Test = require('./routes/test_routes')
 const InviteRoutes = require('./routes/Invite_Routes')
 const StaffQuery = require('./Postgres/Queries/StaffQuery')
 const CorpQuery = require('./Postgres/Queries/CorpQuery')
-const PermissionQuery = require('./Postgres/Queries/PermissionQuery')
-
 const JWT_Check = require('./AuthCheck/JWT_Check').JWT_Check
 const originCheck = require('./AuthCheck/originCheck').originCheck
 
@@ -23,7 +21,9 @@ module.exports = function(app){
 	// Staff Queries
 	app.post('/post_staff_info', [json_encoding, originCheck], StaffQuery.post_staff_info)
 	app.post('/get_staff_info', [json_encoding, originCheck], StaffQuery.get_staff_info)
+	app.post('/get_all_staff_in_corp', [json_encoding, originCheck], StaffQuery.get_all_staff_in_corp)
 	app.post('/update_staff_thumbnail_photo', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_thumbnail_photo)
+	app.post('/delete_staff', [json_encoding, JWT_Check, originCheck], StaffQuery.delete_staff)
 
 	// Corp Queries
 	app.post('/insert_corporation_profile', [json_encoding, JWT_Check, originCheck], CorpQuery.insert_corporation_profile)
@@ -43,7 +43,4 @@ module.exports = function(app){
 	app.post('/update_corporation', [json_encoding, originCheck], CorpQuery.update_corporation)
 	app.post('/remove_alias_email', [json_encoding, originCheck], CorpQuery.remove_alias_email)
 
-
-	// Permission Queries
-	app.post('/insert_building_read_for_all', [json_encoding, JWT_Check, originCheck], PermissionQuery.insert_building_read_for_all)
 }
