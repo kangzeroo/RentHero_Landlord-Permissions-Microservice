@@ -2,6 +2,7 @@ const Promise = require('bluebird')
 const { promisify } = Promise
 const pool = require('../db_connect')
 const sendStaffConfirmationEmail = require('../../aws/ses/aws_ses').sendStaffConfirmationEmail
+const uuid = require('uuid')
 // to run a query we just pass it to the pool
 // after we're done nothing has to be taken care of
 // we don't have to return any client to the pool or close a connection
@@ -147,6 +148,28 @@ exports.update_staff_thumbnail_photo = (req, res, next) => {
   .catch((error) => {
     console.log(error)
       res.status(500).send('Failed to update account info')
+  })
+}
+
+exports.update_staff_profile = (req, res, next) => {
+  const info = req.body
+  const values = [info.staff_id, info.phone, info.staff_title]
+
+  const update_staff = `UPDATE staff
+                           SET phone = $2,
+                               staff_title = $3
+                         WHERE staff_id = $1
+                        `
+
+  query(update_staff, values)
+  .then(() => {
+    res.json({
+      message: 'Successfully updated staff profile'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send('Failed to update staff profile')
   })
 }
 
