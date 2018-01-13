@@ -9,7 +9,6 @@ exports.originCheck = function(req, res, next){
      res.status(500).send({
        message: 'bad boi bad boi'
      })
-     // next()
    }
  } else {
    // if (origin.indexOf('https://localhost:8080') > -1) {
