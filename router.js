@@ -5,6 +5,7 @@ const InviteRoutes = require('./routes/Invite_Routes')
 const StaffQuery = require('./Postgres/Queries/StaffQuery')
 const StaffPermissionsQuery = require('./Postgres/Queries/StaffPermissionsQuery')
 const CorpQuery = require('./Postgres/Queries/CorpQuery')
+const EmployeeQuery = require('./Postgres/Queries/EmployeeQuery')
 const JWT_Check = require('./AuthCheck/JWT_Check').JWT_Check
 const originCheck = require('./AuthCheck/originCheck').originCheck
 
@@ -50,4 +51,7 @@ module.exports = function(app){
 	app.post('/update_corporation', [json_encoding, originCheck], CorpQuery.update_corporation)
 	app.post('/remove_alias_email', [json_encoding, originCheck], CorpQuery.remove_alias_email)
 
+
+	// Employee queries
+	app.post('/insert_employee_mapping', [json_encoding, originCheck], EmployeeQuery.insert_employee_mapping)
 }
