@@ -6,10 +6,10 @@ exports.originCheck = function(req, res, next){
    if (origin.indexOf('rentburrow.com') > -1 || origin.indexOf('renthero.ca') > -1) {
      next()
    } else {
-     // res.status(500).send({
-     //   message: 'bad boi bad boi'
-     // })
-     next()
+     // next()
+     res.status(500).send({
+       message: 'bad boi bad boi'
+     })
    }
  } else {
    // if (origin.indexOf('https://localhost:8080') > -1) {
