@@ -13,7 +13,7 @@ exports.sendEmployeeMappedEmail = function({ email, employee, tenant, building, 
 			console.log(email, employee, tenant, building)
 			const params = createStaffConfirmationParamsConfig(email, employee, tenant, building, inquiry)
 			// console.log('Sending email with attached params!')
-			AWS.config.credentials.refresh(function(){
+			// AWS.config.credentials.refresh(function(){
 				// console.log(AWS.config.credentials)
 				ses.sendEmail(params, function(err, data) {
 				  if(err){
@@ -24,7 +24,7 @@ exports.sendEmployeeMappedEmail = function({ email, employee, tenant, building, 
 					res('Success! Email sent')
 				  }
 				})
-			})
+			// })
 		}
 	})
 	return p
