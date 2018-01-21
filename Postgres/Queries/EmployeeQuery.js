@@ -25,7 +25,7 @@ exports.insert_employee_mapping = (req, res, next) => {
   const info = req.body
   let employee_id = uuid.v4()
 
-  const v = [info.email, info.phone]
+  const v = [info.corporateEmployee.email, info.corporateEmployee.phone]
   const get_employee = `SELECT * FROM employee WHERE email = $1 AND phone = $2`
 
   query(get_employee, v)
