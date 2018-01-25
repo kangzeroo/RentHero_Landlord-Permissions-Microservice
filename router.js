@@ -8,6 +8,7 @@ const CorpQuery = require('./Postgres/Queries/CorpQuery')
 const EmployeeQuery = require('./Postgres/Queries/EmployeeQuery')
 const JWT_Check = require('./AuthCheck/JWT_Check').JWT_Check
 const originCheck = require('./AuthCheck/originCheck').originCheck
+const corpOriginCheck = require('./AuthCheck/corpOriginCheck').corpOriginCheck
 
 // bodyParser attempts to parse any request into JSON format
 const json_encoding = bodyParser.json({type:'*/*'})
@@ -54,4 +55,7 @@ module.exports = function(app){
 
 	// Employee queries
 	app.post('/insert_employee_mapping', [json_encoding, originCheck], EmployeeQuery.insert_employee_mapping)
+	app.post('/get_all_employees', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_employees)
+	app.post('/get_all_mappings_for_employee', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_mappings_for_employee)
+	app.post('/get_employees_for_corporation', [json_encoding, corpOriginCheck], EmployeeQuery.get_employees_for_corporation)
 }
