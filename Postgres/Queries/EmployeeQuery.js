@@ -78,9 +78,81 @@ exports.insert_employee_mapping = (req, res, next) => {
   })
 }
 
-exports.get_employees_for_inquiry = (req, res, next) => {
-  const info = req.body
-  const values = [info.inquiry_id]
+// exports.get_employees_for_inquiry = (req, res, next) => {
+//   const info = req.body
+//   const values = [info.inquiry_id]
+//
+//   const get_employees = `SELECT * FROM employees WHERE inquiry_id = $1`
+// }
 
-  const get_employees = `SELECT * FROM employees WHERE inquiry_id = $1`
+exports.get_all_employees = (req, res, next) => {
+  const get_all_employees = `SELECT * FROM employee`
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_all_employees)
+  .then((data) => {
+    return stringify_rows(data)
+  })
+  .then((data) => {
+    return json_rows(data)
+  })
+  .then((data) => {
+    return return_rows(data)
+  })
+  .catch((error) => {
+    console.log(error)
+      res.status(500).send('Failed to get employees')
+  })
+}
+
+exports.get_all_mappings_for_employee = (req, res, next) => {
+  const info = req.body
+  const values = [info.employee_id]
+
+  const get_maps = `SELECT * FROM employee_mapping WHERE employee_id = $1`
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_maps, values)
+  .then((data) => {
+    return stringify_rows(data)
+  })
+  .then((data) => {
+    return json_rows(data)
+  })
+  .then((data) => {
+    return return_rows(data)
+  })
+  .catch((error) => {
+    console.log(error)
+      res.status(500).send('Failed to get employee mappings')
+  })
+}
+
+exports.get_employees_for_corporation = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+
+  const get_maps = `SELECT * FROM employee WHERE corporation_id = $1`
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_maps, values)
+  .then((data) => {
+    return stringify_rows(data)
+  })
+  .then((data) => {
+    return json_rows(data)
+  })
+  .then((data) => {
+    return return_rows(data)
+  })
+  .catch((error) => {
+    console.log(error)
+      res.status(500).send('Failed to get employee')
+  })
 }
