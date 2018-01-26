@@ -82,10 +82,10 @@ exports.get_corporation_alias_emails = (req, res, next) => {
 exports.insert_corporation_profile = (req, res, next) => {
   const info = req.body
   const corporation_id = uuid.v4()
-  const values = [corporation_id, info.corporation_name, info.email, info.phone, info.website, info.thumbnail, info.corporate_landlord]
+  const values = [corporation_id, info.corporation_name, info.email, info.phone, info.website, info.thumbnail, info.corporate_landlord, info.textable]
 
-  let insert_corp = `INSERT INTO corporation (corporation_id, corporation_name, email, phone, website, thumbnail, corporate_landlord)
-                                      VALUES ($1, $2, $3, $4, $5, $6, $7)`
+  let insert_corp = `INSERT INTO corporation (corporation_id, corporation_name, email, phone, website, thumbnail, corporate_landlord, textable)
+                                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
   query(insert_corp, values)
   .then((data) => {
