@@ -23,6 +23,7 @@ const log_through = data => {
 exports.get_all_corporations = (req, res, next) => {
   const get_all_corps = `SELECT a.corporation_id, a.corporation_name, a.email, a.phone,
                                 a.website, a.thumbnail, a.created_at, a.corporate_landlord,
+                                a.textable,
                                 b.corp_alias_emails
                            FROM corporation a
                            LEFT OUTER JOIN (
@@ -81,10 +82,10 @@ exports.get_corporation_alias_emails = (req, res, next) => {
 exports.insert_corporation_profile = (req, res, next) => {
   const info = req.body
   const corporation_id = uuid.v4()
-  const values = [corporation_id, info.corporation_name, info.email, info.phone, info.website, info.thumbnail, info.corporate_landlord]
+  const values = [corporation_id, info.corporation_name, info.email, info.phone, info.website, info.thumbnail, info.corporate_landlord, info.textable]
 
-  let insert_corp = `INSERT INTO corporation (corporation_id, corporation_name, email, phone, website, thumbnail, corporate_landlord)
-                                      VALUES ($1, $2, $3, $4, $5, $6, $7)`
+  let insert_corp = `INSERT INTO corporation (corporation_id, corporation_name, email, phone, website, thumbnail, corporate_landlord, textable)
+                                      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
   query(insert_corp, values)
   .then((data) => {
@@ -410,14 +411,15 @@ exports.delete_corporation = (req, res, next) => {
 
 exports.update_corporation = (req, res, next) => {
   const info = req.body
-  const values = [info.corporation_id, info.corporation_name, info.website, info.email, info.phone, info.corporate_landlord]
+  const values = [info.corporation_id, info.corporation_name, info.website, info.email, info.phone, info.corporate_landlord, info.textable]
 
   const update_corp = `UPDATE corporation
                           SET corporation_name = $2,
                               website = $3,
                               email = $4,
                               phone = $5,
-                              corporate_landlord = $6
+                              corporate_landlord = $6,
+                              textable = $7
                         WHERE corporation_id = $1
                       `
 
