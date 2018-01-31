@@ -54,8 +54,13 @@ module.exports = function(app){
 
 
 	// Employee queries
+	app.post('/insert_employee', [json_encoding, originCheck], EmployeeQuery.insert_employee)
+	app.post('/assign_employee_to_buildings', [json_encoding, originCheck], EmployeeQuery.assign_employee_to_buildings)
 	app.post('/insert_employee_mapping', [json_encoding, originCheck], EmployeeQuery.insert_employee_mapping)
 	app.post('/get_all_employees', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_employees)
+	app.post('/get_employee_assignments', [json_encoding, corpOriginCheck], EmployeeQuery.get_employee_assignments)
 	app.post('/get_all_mappings_for_employee', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_mappings_for_employee)
 	app.post('/get_employees_for_corporation', [json_encoding, corpOriginCheck], EmployeeQuery.get_employees_for_corporation)
+	app.post('/remove_assignment_from_employee', [json_encoding, corpOriginCheck], EmployeeQuery.remove_assignment_from_employee)
+	app.post('/delete_employee', [json_encoding, corpOriginCheck], EmployeeQuery.delete_employee)
 }
