@@ -21,6 +21,52 @@ const log_through = data => {
   return data
 }
 
+exports.insert_employee = (req, res, next) => {
+  const info = req.body
+  let employee_id = uuid.v4()
+
+  const v = [employee_id, info.corporation_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.calvary]
+  const insert_employee = `INSERT INTO employee (employee_id, corporation_id, first_name, last_name, email, phone, alias_email, calvary)
+                                          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+
+                          `
+  query(insert_employee, v)
+  .then((data) => {
+    res.json({
+      message: 'Successfully created Employee',
+      employee_id: employee_id,
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send(err)
+  })
+}
+
+exports.assign_employee_to_buildings = (req, res, next) => {
+  const info = req.body
+
+  const arrayOfPromises = info.buildings.map((building) => {
+    const values = [info.employee_id, building.building_id]
+    const insert_mapping = `INSERT INTO employee_assignments (employee_id, building_id)
+                                  VALUES ($1, $2)
+                                ON CONFLICT DO NOTHING
+                           `
+    return query(insert_mapping, values)
+  })
+
+  Promise.all(arrayOfPromises)
+  .then((data) => {
+    res.json({
+      message: 'Successfully Assigned Employees'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+    res.status(500).send(err)
+  })
+}
+
 exports.insert_employee_mapping = (req, res, next) => {
   const info = req.body
   let employee_id = uuid.v4()
@@ -78,13 +124,6 @@ exports.insert_employee_mapping = (req, res, next) => {
   })
 }
 
-// exports.get_employees_for_inquiry = (req, res, next) => {
-//   const info = req.body
-//   const values = [info.inquiry_id]
-//
-//   const get_employees = `SELECT * FROM employees WHERE inquiry_id = $1`
-// }
-
 exports.get_all_employees = (req, res, next) => {
   const get_all_employees = `SELECT * FROM employee`
 
@@ -104,6 +143,30 @@ exports.get_all_employees = (req, res, next) => {
   .catch((error) => {
     console.log(error)
       res.status(500).send('Failed to get employees')
+  })
+}
+
+exports.get_employee_assignments = (req, res, next) => {
+  const info = req.body
+  const values = [info.employee_id]
+  const get_all_employees = `SELECT * FROM employee_assignments WHERE employee_id = $1`
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_all_employees, values)
+  .then((data) => {
+    return stringify_rows(data)
+  })
+  .then((data) => {
+    return json_rows(data)
+  })
+  .then((data) => {
+    return return_rows(data)
+  })
+  .catch((error) => {
+    console.log(error)
+    res.status(500).send('Failed to get employee assignments')
   })
 }
 
@@ -154,5 +217,25 @@ exports.get_employees_for_corporation = (req, res, next) => {
   .catch((error) => {
     console.log(error)
       res.status(500).send('Failed to get employee')
+  })
+}
+
+exports.remove_assignment_from_employee = (req, res, next) => {
+  const info = req.body
+  const values = [info.employee_id, info.building_id]
+
+  const remove_assignment = `DELETE FROM employee_assignments
+                                  WHERE employee_id = $1
+                                    AND building_id = $2
+                            `
+
+  query(remove_assignment, values)
+  .then(() => {
+    res.json({
+      message: 'Removed Employee Assignment'
+    })
+  })
+  .catch((err) => {
+    res.status(500).send('Failed to Remove Employee Assignment')
   })
 }
