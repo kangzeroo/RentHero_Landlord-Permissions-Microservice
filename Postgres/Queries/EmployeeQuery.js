@@ -117,6 +117,15 @@ exports.insert_employee_mapping = (req, res, next) => {
     return query(insert_emp_corp, corpValues)
   })
   .then((data) => {
+    const buildingValues = [employee_id, info.building.building_id]
+    const insert_emp_assign = `INSERT INTO employee_assignments (employee_id, building_id)
+                                      VALUES ($1, $2)
+                                  ON CONFLICT (employee_id, building_id) DO NOTHING
+                                `
+
+    return query(insert_emp_assign, buildingValues)
+  })
+  .then((data) => {
     const values2 = [uuid.v4(), employee_id, info.inquiry.inquiry_id, info.building.building_id]
     const query_string = `INSERT INTO employee_mapping (mapping_id, employee_id, inquiry_id, building_id)
                             VALUES ($1, $2, $3, $4)
