@@ -62,5 +62,5 @@ module.exports = function(app){
 	app.post('/get_all_mappings_for_employee', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_mappings_for_employee)
 	app.post('/get_employees_for_corporation', [json_encoding, corpOriginCheck], EmployeeQuery.get_employees_for_corporation)
 	app.post('/remove_assignment_from_employee', [json_encoding, corpOriginCheck], EmployeeQuery.remove_assignment_from_employee)
-
+	app.post('/delete_employee', [json_encoding, corpOriginCheck], EmployeeQuery.delete_employee)
 }

@@ -25,17 +25,37 @@ exports.insert_employee = (req, res, next) => {
   const info = req.body
   let employee_id = uuid.v4()
 
-  const v = [employee_id, info.corporation_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.calvary]
-  const insert_employee = `INSERT INTO employee (employee_id, corporation_id, first_name, last_name, email, phone, alias_email, calvary)
-                                          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  const v = [info.email, info.phone]
+  const get_employee = `SELECT * FROM employee WHERE email = $1 AND phone = $2`
 
-                          `
-  query(insert_employee, v)
+
+
+  query(get_employee, v)
   .then((data) => {
-    res.json({
-      message: 'Successfully created Employee',
-      employee_id: employee_id,
-    })
+    if (data && data.rows && data.rows.length > 0 && data.rows[0].employee_id.length > 0) {
+      res.status(500).send('Employee Already Exists')
+    } else {
+      const values = [employee_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.calvary]
+      const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, calvary)
+                                              VALUES ($1, $2, $3, $4, $5, $6, $7)
+                                      ON CONFLICT DO NOTHING
+
+                              `
+      query(insert_employee, values)
+      .then((data) => {
+        const corpValues = [employee_id, info.corporation_id]
+        const insert_employee_corp = `INSERT INTO employee_corporation (employee_id, corporation_id)
+                                            VALUES ($1, $2)
+                                      `
+        return query(insert_employee_corp, corpValues)
+      })
+      .then((data) => {
+        res.json({
+          message: 'Successfully created Employee',
+          employee_id: employee_id,
+        })
+      })
+    }
   })
   .catch((err) => {
     console.log(err)
@@ -199,7 +219,14 @@ exports.get_employees_for_corporation = (req, res, next) => {
   const info = req.body
   const values = [info.corporation_id]
 
-  const get_maps = `SELECT * FROM employee WHERE corporation_id = $1`
+  const get_maps = `SELECT a.employee_id, a.first_name, a.last_name, a.email, a.phone,
+                           a.alias_email, a.calvary, a.created_at,
+                           b.corporation_id
+                      FROM employee a
+                      INNER JOIN employee_corporation b
+                      ON a.employee_id = b.employee_id
+                      WHERE b.corporation_id = $1
+                   `
 
   const return_rows = (rows) => {
     res.json(rows)
@@ -237,5 +264,22 @@ exports.remove_assignment_from_employee = (req, res, next) => {
   })
   .catch((err) => {
     res.status(500).send('Failed to Remove Employee Assignment')
+  })
+}
+
+exports.delete_employee = (req, res, next) => {
+  const info = req.body
+  const values = [info.employee_id]
+
+  const remove_employee = `DELETE FROM employee WHERE employee_id = $1`
+
+  query(remove_employee, values)
+  .then(() => {
+    res.json({
+      message: 'Removed Employee'
+    })
+  })
+  .catch((err) => {
+    res.status(500).send('Failed to Remove Employee')
   })
 }
