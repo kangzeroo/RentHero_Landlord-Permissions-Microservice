@@ -35,8 +35,8 @@ exports.insert_employee = (req, res, next) => {
     if (data && data.rows && data.rows.length > 0 && data.rows[0].employee_id.length > 0) {
       res.status(500).send('Employee Already Exists')
     } else {
-      const values = [employee_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.calvary]
-      const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, calvary)
+      const values = [employee_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.cavalry]
+      const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry)
                                               VALUES ($1, $2, $3, $4, $5, $6, $7)
                                       ON CONFLICT DO NOTHING
 
@@ -100,16 +100,24 @@ exports.insert_employee_mapping = (req, res, next) => {
     if (data && data.rows && data.rows.length > 0) {
       employee_id = data.rows[0].employee_id
     }
-    const values = [employee_id, info.corporation_id, info.corporateEmployee.name, info.corporateEmployee.email, info.corporateEmployee.phone, info.corporateEmployee.alias_email]
+    const values = [employee_id, info.corporateEmployee.first_name, info.corporateEmployee.last_name, info.corporateEmployee.email, info.corporateEmployee.phone, info.corporateEmployee.alias_email]
 
-    const insert_employee = `INSERT INTO employee (employee_id, corporation_id, name, email, phone, alias_email)
-                                  VALUES ($1, $2, $3, $4, $5, $6)
+    const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry)
+                                  VALUES ($1, $2, $3, $4, $5, $6, false)
                                 ON CONFLICT (email, phone) DO NOTHING
                             `
     return query(insert_employee, values)
   })
   .then((data) => {
-    const values2 = [uuid.v4(), employee_id, info.inquiry_id, info.building_id]
+    const corpValues = [employee_id, info.corporation_id]
+    const insert_emp_corp = `INSERT INTO employee_corporation (employee_id, corporation_id)
+                                    VALUES ($1, $2)
+                                ON CONFLICT (employee_id, corporation_id) DO NOTHING
+                            `
+    return query(insert_emp_corp, corpValues)
+  })
+  .then((data) => {
+    const values2 = [uuid.v4(), employee_id, info.inquiry.inquiry_id, info.building.building_id]
     const query_string = `INSERT INTO employee_mapping (mapping_id, employee_id, inquiry_id, building_id)
                             VALUES ($1, $2, $3, $4)
                           ON CONFLICT (employee_id, inquiry_id) DO NOTHING
@@ -122,17 +130,17 @@ exports.insert_employee_mapping = (req, res, next) => {
 
     return query(get_corp_email, values3)
   })
-  .then((data) => {
-    const corp_email = data.rows[0].email
-
-    return sendEmployeeMappedEmail({
-      email: corp_email,
-      employee: info.corporateEmployee,
-      tenant: info.tenant,
-      building: info.building,
-      inquiry: info.inquiry
-    })
-  })
+  // .then((data) => {
+  //   const corp_email = data.rows[0].email
+  //
+  //   return sendEmployeeMappedEmail({
+  //     email: corp_email,
+  //     employee: info.corporateEmployee,
+  //     tenant: info.tenant,
+  //     building: info.building,
+  //     inquiry: info.inquiry
+  //   })
+  // })
   .then(() => {
     res.json({
       message: 'Successfully Inserted Employee Mappings'
@@ -220,7 +228,7 @@ exports.get_employees_for_corporation = (req, res, next) => {
   const values = [info.corporation_id]
 
   const get_maps = `SELECT a.employee_id, a.first_name, a.last_name, a.email, a.phone,
-                           a.alias_email, a.calvary, a.created_at,
+                           a.alias_email, a.cavalry, a.created_at,
                            b.corporation_id
                       FROM employee a
                       INNER JOIN employee_corporation b
