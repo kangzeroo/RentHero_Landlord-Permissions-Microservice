@@ -152,7 +152,8 @@ exports.insert_employee_mapping = (req, res, next) => {
   // })
   .then(() => {
     res.json({
-      message: 'Successfully Inserted Employee Mappings'
+      message: 'Successfully Inserted Employee Mappings',
+      employee_id: employee_id,
     })
   })
   .catch((err) => {
