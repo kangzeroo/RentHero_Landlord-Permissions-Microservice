@@ -97,12 +97,11 @@ exports.get_staff_info = (req, res, next) => {
     .then((data) => {
       // console.log("========================")
       // console.log(typeof JSON.parse(data))
-      // console.log(JSON.parse(data))
       return return_rows(JSON.parse(data))
     })
     .catch((error) => {
       console.log(error)
-        res.status(500).send('Failed to get staff info')
+      res.status(500).send('Failed to get staff info')
     })
 }
 
