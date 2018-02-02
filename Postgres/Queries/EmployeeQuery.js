@@ -10,16 +10,9 @@ const sendEmployeeMappedEmail = require('../../aws/ses/send_employee_mapping').s
 
 const query = promisify(pool.query)
 
-// stringify_rows: Convert each row into a string
 const stringify_rows = res => res.rows.map(row => JSON.stringify(row))
 
 const json_rows = res => res.map(row => JSON.parse(row))
-
-//log_through: log each row
-const log_through = data => {
-  // console.log(data)
-  return data
-}
 
 exports.insert_employee = (req, res, next) => {
   const info = req.body
@@ -41,7 +34,7 @@ exports.insert_employee = (req, res, next) => {
                                       ON CONFLICT DO NOTHING
 
                               `
-      query(insert_employee, values)
+      return query(insert_employee, values)
       .then((data) => {
         const corpValues = [employee_id, info.corporation_id]
         const insert_employee_corp = `INSERT INTO employee_corporation (employee_id, corporation_id)
@@ -68,8 +61,8 @@ exports.assign_employee_to_buildings = (req, res, next) => {
 
   const arrayOfPromises = info.buildings.map((building) => {
     const values = [info.employee_id, building.building_id]
-    const insert_mapping = `INSERT INTO employee_assignments (employee_id, building_id)
-                                  VALUES ($1, $2)
+    const insert_mapping = `INSERT INTO employee_assignments (employee_id, building_id, suite_id)
+                                  VALUES ($1, $2, null)
                                 ON CONFLICT DO NOTHING
                            `
     return query(insert_mapping, values)
@@ -84,6 +77,31 @@ exports.assign_employee_to_buildings = (req, res, next) => {
   .catch((err) => {
     console.log(err)
     res.status(500).send(err)
+  })
+}
+
+exports.assign_employee_to_suites = (req, res, next) => {
+  const info = req.body
+  console.log(info)
+  const arrayOfPromises = info.suites.map((suite) => {
+    const values = [info.employee_id, suite.building_id, suite.suite_id]
+
+    const insert_mapping = `INSERT INTO employee_assignments (employee_id, building_id, suite_id)
+                                  VALUES ($1, $2, $3)
+                              ON CONFLICT DO NOTHING
+                            `
+    return query(insert_mapping, values)
+  })
+
+  Promise.all(arrayOfPromises)
+  .then((data) => {
+    res.json({
+      message: 'Successfully assigned employee to suites'
+    })
+  })
+  .catch((err) => {
+    console.log('assign_employee_to_suites: ', err)
+    res.status(500).send('Failed to assign employees to suites')
   })
 }
 
@@ -187,7 +205,10 @@ exports.get_all_employees = (req, res, next) => {
 exports.get_employee_assignments = (req, res, next) => {
   const info = req.body
   const values = [info.employee_id]
-  const get_all_employees = `SELECT * FROM employee_assignments WHERE employee_id = $1`
+  const get_all_employees = `SELECT employee_id, building_id, suite_id, created_at
+                               FROM employee_assignments
+                               WHERE employee_id = $1
+                               `
 
   const return_rows = (rows) => {
     res.json(rows)

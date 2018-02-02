@@ -56,6 +56,7 @@ module.exports = function(app){
 	// Employee queries
 	app.post('/insert_employee', [json_encoding, originCheck], EmployeeQuery.insert_employee)
 	app.post('/assign_employee_to_buildings', [json_encoding, originCheck], EmployeeQuery.assign_employee_to_buildings)
+	app.post('/assign_employee_to_suites', [json_encoding, originCheck], EmployeeQuery.assign_employee_to_suites)
 	app.post('/insert_employee_mapping', [json_encoding, originCheck], EmployeeQuery.insert_employee_mapping)
 	app.post('/get_all_employees', [json_encoding, corpOriginCheck], EmployeeQuery.get_all_employees)
 	app.post('/get_employee_assignments', [json_encoding, corpOriginCheck], EmployeeQuery.get_employee_assignments)
