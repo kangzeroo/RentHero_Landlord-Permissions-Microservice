@@ -15,9 +15,10 @@ exports.originCheck = function(req, res, next){
    if (origin.indexOf('https://localhost:8080') > -1) {
      next()
    } else {
-     res.status(500).send({
-       message: 'Incorrect request origin. Not https://localhost:8080'
-     })
+     next()
+     // res.status(500).send({
+     //   message: 'Incorrect request origin. Not https://localhost:8080'
+     // })
    }
    // next()
  }
