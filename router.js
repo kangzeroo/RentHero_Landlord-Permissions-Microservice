@@ -19,6 +19,7 @@ module.exports = function(app){
 
 	// routes
 	app.get('/test', json_encoding, Test.test)
+	app.get('/current_time', json_encoding, Test.current_time)
 	app.post('/send_staff_invite', [json_encoding, originCheck], InviteRoutes.send_staff_invite)
 
 	// Staff Queries
