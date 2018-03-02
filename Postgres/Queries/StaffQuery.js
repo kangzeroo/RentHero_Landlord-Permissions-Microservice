@@ -137,7 +137,7 @@ exports.get_all_staff = (req, res, next) => {
     res.json(rows)
   }
 
-  query(query_string, values)
+  query(query_string)
     .then((data) => {
       return stringify_rows(data)
     })
