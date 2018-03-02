@@ -26,6 +26,7 @@ module.exports = function(app){
 	app.post('/post_staff_info', [json_encoding, originCheck], StaffQuery.post_staff_info)
 	app.post('/get_staff_info', [json_encoding, originCheck], StaffQuery.get_staff_info)
 	app.post('/get_all_staff_in_corp', [json_encoding, originCheck], StaffQuery.get_all_staff_in_corp)
+	app.post('/get_all_staff', [json_encoding, originCheck], StaffQuery.get_all_staff)
 	app.post('/update_staff_thumbnail_photo', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_thumbnail_photo)
 	app.post('/update_staff_profile', [json_encoding, JWT_Check, originCheck], StaffQuery.update_staff_profile)
 	app.post('/delete_staff', [json_encoding, JWT_Check, originCheck], StaffQuery.delete_staff)
