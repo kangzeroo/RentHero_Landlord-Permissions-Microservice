@@ -130,6 +130,29 @@ exports.get_all_staff_in_corp = (req, res, next) => {
     })
 }
 
+exports.get_all_staff = (req, res, next) => {
+  let query_string = `SELECT * FROM staff`
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+
+  query(query_string, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      console.log(error)
+        res.status(500).send('Failed to get staff info')
+    })
+}
+
 exports.update_staff_thumbnail_photo = (req, res, next) => {
   const info = req.body
   // console.log(info)
