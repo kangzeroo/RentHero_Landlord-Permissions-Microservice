@@ -29,8 +29,8 @@ exports.insert_employee = (req, res, next) => {
       res.status(500).send('Employee Already Exists')
     } else {
       const values = [employee_id, info.first_name, info.last_name, info.email, info.phone, info.alias_email, info.cavalry]
-      const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry)
-                                              VALUES ($1, $2, $3, $4, $5, $6, $7)
+      const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry, active)
+                                              VALUES ($1, $2, $3, $4, $5, $6, $7, true)
                                       ON CONFLICT DO NOTHING
 
                               `
@@ -120,8 +120,8 @@ exports.insert_employee_mapping = (req, res, next) => {
     }
     const values = [employee_id, info.corporateEmployee.first_name, info.corporateEmployee.last_name, info.corporateEmployee.email, info.corporateEmployee.phone, info.corporateEmployee.alias_email]
 
-    const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry)
-                                  VALUES ($1, $2, $3, $4, $5, $6, false)
+    const insert_employee = `INSERT INTO employee (employee_id, first_name, last_name, email, phone, alias_email, cavalry, active)
+                                  VALUES ($1, $2, $3, $4, $5, $6, false, true)
                                 ON CONFLICT (email, phone) DO NOTHING
                             `
     return query(insert_employee, values)
@@ -259,7 +259,7 @@ exports.get_employees_for_corporation = (req, res, next) => {
   const values = [info.corporation_id]
 
   const get_maps = `SELECT a.employee_id, a.first_name, a.last_name, a.email, a.phone,
-                           a.alias_email, a.cavalry, a.created_at,
+                           a.alias_email, a.cavalry, a.active, a.created_at,
                            b.corporation_id
                       FROM employee a
                       INNER JOIN employee_corporation b
